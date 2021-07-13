@@ -1,17 +1,18 @@
+# importing modules
 import os
+from decouple import config
 import discord
 import requests
 import random
 
-api_key = os.environ['API']
-my_token = os.environ['TOKEN']
-my_gif = ''
+api = config('API')
+token = config('TOKEN')
 
 client = discord.Client()
+
 params = {
   "q": "nicholas cage", 
-  "api_key": api_key,
-  "limit": 10,
+  "api_key": api,
   "lang": "en"
 }
 @client.event
@@ -25,9 +26,8 @@ async def on_message(message):
 
   if message.content.startswith('Cage Me!'):
     response = requests.get("http://api.giphy.com/v1/gifs/search", params=params).json()
-    for r in response['data']:
-      #gif = random.choices(r['url'])
-      print(r['url'])
-      await message.channel.send(r['url'])
+    lst = list(response['data'])
+    gif = random.choices(lst)
+    await message.channel.send(gif[0]['url'])
 
-client.run(my_token)
+client.run(token)
